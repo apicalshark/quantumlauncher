@@ -135,18 +135,18 @@ jobs:
           mkdir dist
 
           if [ "${{ matrix.build }}" = "x86_64-windows" ] || [ "${{ matrix.build }}" = "i686-windows" ]; then
-            cp "target/${{ matrix.target }}/release-ql/$BIN_NAME.exe" "dist/"
+            cp "target/${{ matrix.target }}/release-ql/${{ env.BIN_NAME }}.exe" "dist/"
           elif [ "${{ matrix.build }}" = "aarch64-macos" ] || [ "${{ matrix.build }}" = "x86_64-macos" ]; then
             APP_DIR="build/quantum-launcher.app"
             MACOS_DIR="$APP_DIR/Contents/MacOS"
             RESOURCES_DIR="$APP_DIR/Contents/Resources"
             mkdir -p "$MACOS_DIR" "$RESOURCES_DIR"
-            cp "target/${{ matrix.target }}/release-ql/$BIN_NAME" "$MACOS_DIR/$BIN_NAME"
+            cp "target/${{ matrix.target }}/release-ql/${{ env.BIN_NAME }}" "$MACOS_DIR/${{ env.BIN_NAME }}"
             cp assets/freedesktop/Info.plist "$APP_DIR/Contents/Info.plist"
             sips -s format icns "assets/icon/ql_logo.png" --out "$RESOURCES_DIR/ql_logo.icns"
             hdiutil create -volname "${{ env.BIN_NAME}}" -srcfolder "$APP_DIR" -ov -format UDZO "dist/${{ env.BIN_NAME }}.dmg"
           else
-            cp "target/${{ matrix.target }}/release-ql/$BIN_NAME" "dist/"
+            cp "target/${{ matrix.target }}/release-ql/${{ env.BIN_NAME }}" "dist/"
           fi
 
       - uses: actions/upload-artifact@v5
@@ -181,7 +181,7 @@ jobs:
 
               binary_path=$(find "$dir" -type f | head -n 1)
               platform_name=$(basename "$dir" | sed 's/quantum-launcher-//')
-              pkgname="${PROJECT_NAME}_${platform_name}"
+              pkgname="${{ env.PROJECT_NAME }}_${platform_name}"
 
               if [ ! -f "$binary_path" ]; then
                   echo "Error: Binary not found in $dir."
