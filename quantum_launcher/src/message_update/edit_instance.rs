@@ -51,7 +51,7 @@ macro_rules! iflet_config {
             let global_settings =
                 global_settings.get_or_insert_with(GlobalSettings::default);
             let $prefix =
-                global_settings.pre_launch_prefix.get_or_insert_with(Vec::new);
+                &mut global_settings.pre_launch_prefix;
             $body
         });
     };
@@ -70,6 +70,20 @@ impl Launcher {
                 }) = &mut self.state
                 {
                     menu.config.java_override = Some(n);
+                }
+            }
+            EditInstanceMessage::BrowseJavaOverride => {
+                if let Some(file) = rfd::FileDialog::new()
+                    .set_title("Select Java Executable (./bin/java)")
+                    .pick_file()
+                {
+                    if let State::Launch(MenuLaunch {
+                        edit_instance: Some(menu),
+                        ..
+                    }) = &mut self.state
+                    {
+                        menu.config.java_override = Some(file.to_string_lossy().to_string());
+                    }
                 }
             }
             EditInstanceMessage::MemoryChanged(new_slider_value) => {
@@ -108,12 +122,12 @@ impl Launcher {
             }
             EditInstanceMessage::JavaArgs(msg) => {
                 iflet_config!(&mut self.state, java_args, {
-                    msg.apply(java_args.get_or_insert_with(Vec::new));
+                    msg.apply(java_args);
                 });
             }
             EditInstanceMessage::GameArgs(msg) => {
                 iflet_config!(&mut self.state, game_args, {
-                    msg.apply(game_args.get_or_insert_with(Vec::new));
+                    msg.apply(game_args);
                 });
             }
             EditInstanceMessage::PreLaunchPrefix(msg) => {

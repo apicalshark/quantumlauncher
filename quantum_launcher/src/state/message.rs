@@ -76,6 +76,7 @@ pub enum EditInstanceMessage {
     ConfigSaved(Res),
     ReinstallLibraries,
     UpdateAssets,
+    BrowseJavaOverride,
 
     JavaOverride(String),
     MemoryChanged(f32),
@@ -269,6 +270,7 @@ pub enum LauncherSettingsMessage {
     UiScale(f64),
     UiScaleApply,
     UiOpacity(f32),
+    UiIdleFps(f64),
     ClearJavaInstalls,
     ClearJavaInstallsConfirm,
     ChangeTab(LauncherSettingsTab),

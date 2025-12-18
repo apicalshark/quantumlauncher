@@ -140,7 +140,7 @@ impl GameLauncher {
             game_arguments.push(height.to_string());
         }
 
-        game_arguments.extend(self.config_json.game_args.iter().flatten().cloned());
+        game_arguments.extend(self.config_json.game_args.clone());
 
         Ok(game_arguments)
     }
@@ -758,10 +758,9 @@ impl GameLauncher {
     }
 
     pub async fn get_java_command(&mut self) -> Result<(Command, PathBuf), GameLaunchError> {
-        if let Some(java_override) = &self.config_json.java_override {
-            if !java_override.is_empty() {
-                return Ok((Command::new(java_override), PathBuf::from(java_override)));
-            }
+        if let Some(java_override) = self.config_json.get_java_override() {
+            info!("Java (override): {java_override:?}\n");
+            return Ok((Command::new(&java_override), java_override));
         }
         let version = if let Some(version) = self.version_json.javaVersion.clone() {
             version.into()
@@ -779,7 +778,7 @@ impl GameLauncher {
             self.java_install_progress_sender.take().as_ref(),
         )
         .await?;
-        info!("Java: {program:?}");
+        info!("Java: {program:?}\n");
         Ok((Command::new(&program), program))
     }
 
@@ -809,11 +808,10 @@ impl GameLauncher {
     ) -> Result<(Command, PathBuf), GameLaunchError> {
         let (mut command, mut path) = self.get_java_command().await?;
 
-        let prefix_commands = self.config_json.setup_launch_prefix(
-            &self
-                .global_settings
+        let prefix_commands = self.config_json.build_launch_prefix(
+            self.global_settings
                 .as_ref()
-                .and_then(|n| n.pre_launch_prefix.clone())
+                .map(|n| n.pre_launch_prefix.as_slice())
                 .unwrap_or_default(),
         );
         if prefix_commands.is_empty() {
