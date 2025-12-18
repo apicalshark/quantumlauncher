@@ -164,11 +164,6 @@ jobs:
     needs: [dist, build-appimages]
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout sources
-        uses: actions/checkout@v6
-        with:
-          submodules: false
-
       - uses: actions/download-artifact@v6
       - run: ls -alR
 
