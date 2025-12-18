@@ -86,6 +86,7 @@ jobs:
           else
             ARCH=arm_aarch64 appimagetool AppDir ${{ env.BIN_NAME }}.AppImage
           fi
+          cp ${{ env.BIN_NAME }}.AppImage dist
 
       - name: Upload artifact
         uses: actions/upload-artifact@v5
