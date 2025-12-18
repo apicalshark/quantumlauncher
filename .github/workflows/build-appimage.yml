@@ -82,13 +82,13 @@ jobs:
           cp assets/icon/512x512/ql_logo.png AppDir/usr/share/icons/hicolor/512x512/apps/io.github.Mrmayman.QuantumLauncher.png
           linuxdeploy --appdir AppDir
           if [ "${{ matrix.arch }}" == "x86_64" ]; then
-            ARCH=x86_64 appimagetool AppDir ${{ env.PROJECT_NAME }}-${{ matrix.final_name }}.AppImage
+            ARCH=x86_64 appimagetool AppDir quantum-launcher-${{ matrix.final_name }}.AppImage
           else
-            ARCH=arm_aarch64 appimagetool AppDir ${{ env.PROJECT_NAME }}-${{ matrix.final_name }}.AppImage
+            ARCH=arm_aarch64 appimagetool AppDir quantum-launcher-${{ matrix.final_name }}.AppImage
           fi
 
       - name: Upload artifact
         uses: actions/upload-artifact@v5
         with:
-          name: ${{ env.PROJECT_NAME }}-${{ matrix.final_name }}
-          path: ${{ env.PROJECT_NAME }}-${{ matrix.final_name }}.AppImage
+          name: quantum-launcher-${{ matrix.final_name }}
+          path: quantum-launcher-${{ matrix.final_name }}.AppImage
