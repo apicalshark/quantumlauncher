@@ -156,7 +156,6 @@ jobs:
           path: dist
 
   build-appimages:
-    name: Build AppImage
     uses: ./.github/workflows/build-appimage.yml
 
   publish:
