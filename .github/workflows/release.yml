@@ -11,11 +11,11 @@ on:
         required: true
         type: string
       release_title:
-        description: 'Release Title'
+        description: 'Release Title (optional)'
         required: false
         type: string
       release_body:
-        description: 'Release Description (Markdown)'
+        description: 'Release Description (Markdown) (optional)'
         required: false
         type: string
       create_release:
@@ -194,7 +194,7 @@ jobs:
             echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
             echo "title=$TAG_NAME" >> $GITHUB_OUTPUT
             echo "enabled=true" >> $GITHUB_OUTPUT
-            echo "body=Automatic release for $TAG_NAME" >> $GITHUB_OUTPUT
+            echo "body=Release $TAG_NAME" >> $GITHUB_OUTPUT
           fi
 
       - name: Prepare Binaries for Release
