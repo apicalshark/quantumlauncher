@@ -4,42 +4,28 @@ permissions:
   contents: write
 
 on:
-  workflow_dispatch:
-    inputs:
-      tag_name:
-        description: 'Tag name (e.g. v1.0.0)'
-        required: true
-        type: string
-      release_title:
-        description: 'Release Title'
-        required: false
-        type: string
-      release_body:
-        description: 'Release Description (Markdown)'
-        required: false
-        type: string
-      create_release:
-        description: 'Create GitHub Release'
-        required: true
-        type: boolean
-        default: true
+  workflow_dispatch: # allows manual triggering
 
-  # push:
-  #   tags:
-  #     - "v[0-9]+.[0-9]+"
-  #     - "v[0-9]+.[0-9]+.[0-9]+"
+  # schedule:
+  # - cron: '0 0 * * *' # midnight UTC
+
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+"
+      - "v[0-9]+.[0-9]+.[0-9]+"
+    ## - release
 
 env:
   BIN_NAME: quantum_launcher
   PROJECT_NAME: quantum_launcher
-  CARGO_TERM_COLOR: always
+  CARGO_TERM_COLOR: always # Tell cargo to always use colors
 
 jobs:
   dist:
     name: Dist
     runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: false
+      fail-fast: false # don't fail other jobs if one fails
       matrix:
         build:
           [
@@ -104,7 +90,7 @@ jobs:
 
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           submodules: true
 
@@ -147,6 +133,7 @@ jobs:
         shell: bash
         run: |
           mkdir dist
+
           if [ "${{ matrix.build }}" = "x86_64-windows" ] || [ "${{ matrix.build }}" = "i686-windows" ]; then
             cp "target/${{ matrix.target }}/release-ql/${{ env.BIN_NAME }}.exe" "dist/"
           elif [ "${{ matrix.build }}" = "aarch64-macos" ] || [ "${{ matrix.build }}" = "x86_64-macos" ]; then
@@ -162,7 +149,7 @@ jobs:
             cp "target/${{ matrix.target }}/release-ql/${{ env.BIN_NAME }}" "dist/"
           fi
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: quantum-launcher-${{ matrix.final_name }}
           path: dist
@@ -175,50 +162,50 @@ jobs:
     needs: [dist, build-appimages]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v6
+      - run: ls -alR
 
-      - name: Determine Release Metadata
-        id: meta
+      - name: Calculate tag name
         run: |
-          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            echo "tag=${{ github.event.inputs.tag_name }}" >> $GITHUB_OUTPUT
-            echo "title=${{ github.event.inputs.release_title || github.event.inputs.tag_name }}" >> $GITHUB_OUTPUT
-            echo "body=${{ github.event.inputs.release_body }}" >> $GITHUB_OUTPUT
-            echo "enabled=${{ github.event.inputs.create_release }}" >> $GITHUB_OUTPUT
-          else
-            # For tag push
-            echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
-            echo "title=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
-            echo "body=Automatic release for ${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
-            echo "enabled=true" >> $GITHUB_OUTPUT
-          fi
+          echo "val=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+          echo "Tag value: $val"
+        id: tagname
 
-      - name: Prepare Binaries for Release
+      - name: Build archive and Copy binaries
         shell: bash
         run: |
           set -xe
-          mkdir -p dist
+          mkdir -p dist arti
+
           for dir in quantum-launcher-* ; do
+
               binary_path=$(find "$dir" -type f | head -n 1)
               platform_name=$(basename "$dir" | sed 's/quantum-launcher-//')
               pkgname="${{ env.PROJECT_NAME }}_${platform_name}"
+
+              if [ ! -f "$binary_path" ]; then
+                  echo "Error: Binary not found in $dir."
+                  tree
+                  exit 1
+              fi
+
               zip -j "dist/$pkgname.zip" "$binary_path"
+              zip -j "arti/$pkgname.zip" "$binary_path"
           done
 
-      - name: Create Release and Upload Assets
-        if: steps.meta.outputs.enabled == 'true'
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ steps.meta.outputs.tag }}
-          name: ${{ steps.meta.outputs.title }}
-          body: ${{ steps.meta.outputs.body }}
-          files: dist/*
-          generate_release_notes: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Upload as artifact
-        uses: actions/upload-artifact@v4
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        uses: actions/upload-artifact@v5
         with:
-          name: artifacts
-          path: dist/*
+          name: binaries
+          path: arti/*
+
+      - name: Upload binaries to release
+        if: ${{ github.event_name != 'workflow_dispatch' }}
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: dist/*
+          file_glob: true
+          tag: ${{ steps.tagname.outputs.val }}
+          overwrite: true
