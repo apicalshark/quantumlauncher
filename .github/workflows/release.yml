@@ -176,18 +176,25 @@ jobs:
 
       - name: Determine Release Metadata
         id: meta
+        env:
+          MANUAL_BODY: ${{ github.event.inputs.release_body }}
         run: |
           if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
             echo "tag=${{ github.event.inputs.tag_name }}" >> $GITHUB_OUTPUT
             echo "title=${{ github.event.inputs.release_title || github.event.inputs.tag_name }}" >> $GITHUB_OUTPUT
-            echo "body=${{ github.event.inputs.release_body }}" >> $GITHUB_OUTPUT
             echo "enabled=${{ github.event.inputs.create_release }}" >> $GITHUB_OUTPUT
+
+            # Use a delimiter for multiline strings
+            echo "body<<EOF" >> $GITHUB_OUTPUT
+            echo "$MANUAL_BODY" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
           else
             # For tag push
-            echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
-            echo "title=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
-            echo "body=Automatic release for ${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+            TAG_NAME=${GITHUB_REF#refs/tags/}
+            echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
+            echo "title=$TAG_NAME" >> $GITHUB_OUTPUT
             echo "enabled=true" >> $GITHUB_OUTPUT
+            echo "body=Automatic release for $TAG_NAME" >> $GITHUB_OUTPUT
           fi
 
       - name: Prepare Binaries for Release
