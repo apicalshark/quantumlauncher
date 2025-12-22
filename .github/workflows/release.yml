@@ -245,4 +245,5 @@ jobs:
           token: ${{ secrets.PAT }}
           repository: ${{ github.repository_owner }}/ql-flatpak-remote
           event-type: trigger-flatpak-update
-          client-payload: '{"tag": "${{ steps.meta.outputs.tag }}"}'
+          # This might be useful in the future
+          # client-payload: '{"tag": "${{ steps.meta.outputs.tag }}"}'
