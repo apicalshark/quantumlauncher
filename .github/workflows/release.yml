@@ -49,13 +49,13 @@ jobs:
         build:
           [
             x86_64-linux,
-            aarch64-linux,
-            armv7-linux,
-            x86_64-macos,
-            x86_64-windows,
-            aarch64-macos,
-            aarch64-windows,
-            i686-windows,
+            # aarch64-linux,
+            # armv7-linux,
+            # x86_64-macos,
+            # x86_64-windows,
+            # aarch64-macos,
+            # aarch64-windows,
+            # i686-windows,
           ]
         include:
           - build: x86_64-linux
@@ -64,48 +64,48 @@ jobs:
             target: x86_64-unknown-linux-gnu
             cross: false
             final_name: linux_x86_64
-          - build: aarch64-linux
-            os: ubuntu-22.04-arm
-            rust: stable
-            target: aarch64-unknown-linux-gnu
-            cross: false
-            final_name: linux_aarch64
-          - build: armv7-linux
-            os: ubuntu-22.04
-            rust: stable
-            target: armv7-unknown-linux-gnueabihf
-            cross: true
-            final_name: linux_arm32
-          - build: x86_64-macos
-            os: macos-latest
-            rust: stable
-            target: x86_64-apple-darwin
-            cross: false
-            final_name: macos_x86_64
-          - build: x86_64-windows
-            os: windows-latest
-            rust: stable
-            target: x86_64-pc-windows-msvc
-            cross: false
-            final_name: windows_x86_64
-          - build: aarch64-macos
-            os: macos-latest
-            rust: stable
-            target: aarch64-apple-darwin
-            cross: false
-            final_name: macos_aarch64
-          - build: aarch64-windows
-            os: windows-11-arm
-            rust: stable
-            target: aarch64-pc-windows-msvc
-            cross: false
-            final_name: windows_aarch64
-          - build: i686-windows
-            os: windows-latest
-            rust: stable-i686
-            target: i686-pc-windows-msvc
-            cross: false
-            final_name: windows_i686
+          # - build: aarch64-linux
+          #   os: ubuntu-22.04-arm
+          #   rust: stable
+          #   target: aarch64-unknown-linux-gnu
+          #   cross: false
+          #   final_name: linux_aarch64
+          # - build: armv7-linux
+          #   os: ubuntu-22.04
+          #   rust: stable
+          #   target: armv7-unknown-linux-gnueabihf
+          #   cross: true
+          #   final_name: linux_arm32
+          # - build: x86_64-macos
+          #   os: macos-latest
+          #   rust: stable
+          #   target: x86_64-apple-darwin
+          #   cross: false
+          #   final_name: macos_x86_64
+          # - build: x86_64-windows
+          #   os: windows-latest
+          #   rust: stable
+          #   target: x86_64-pc-windows-msvc
+          #   cross: false
+          #   final_name: windows_x86_64
+          # - build: aarch64-macos
+          #   os: macos-latest
+          #   rust: stable
+          #   target: aarch64-apple-darwin
+          #   cross: false
+          #   final_name: macos_aarch64
+          # - build: aarch64-windows
+          #   os: windows-11-arm
+          #   rust: stable
+          #   target: aarch64-pc-windows-msvc
+          #   cross: false
+          #   final_name: windows_aarch64
+          # - build: i686-windows
+          #   os: windows-latest
+          #   rust: stable-i686
+          #   target: i686-pc-windows-msvc
+          #   cross: false
+          #   final_name: windows_i686
 
     steps:
       - name: Checkout sources
@@ -179,7 +179,8 @@ jobs:
 
   publish:
     name: Publish
-    needs: [dist, build-appimages]
+    #, build-appimages
+    needs: [dist]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v6
@@ -199,7 +200,7 @@ jobs:
             # echo "body<<EOF" >> $GITHUB_OUTPUT
             # echo "$MANUAL_BODY" >> $GITHUB_OUTPUT
             # echo "EOF" >> $GITHUB_OUTPUT
-          elif [ "${{ github.event_name }}" == "push" ]
+          elif [ "${{ github.event_name }}" == "push" ]; then
             TAG_NAME=${GITHUB_REF#refs/tags/}
             echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
             echo "title=$TAG_NAME" >> $GITHUB_OUTPUT
