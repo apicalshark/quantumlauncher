@@ -19,10 +19,10 @@ A simple Minecraft Launcher written in Rust.}
 cargo fetch
 
 %build
-cargo build --profile release-ql
+cargo build --profile release
 
 %install
-install -Dm755 target/release-ql/quantum_launcher %{buildroot}%{_bindir}/quantum-launcher
+install -Dm755 target/release/quantum_launcher %{buildroot}%{_bindir}/quantum-launcher
 install -Dm644 assets/freedesktop/quantum-launcher.desktop %{buildroot}%{_datadir}/applications/quantum-launcher.desktop
 install -Dm644 assets/icon/256x256/ql_logo.png %{buildroot}%{_datadir}/pixmaps/io.github.Mrmayman.QuantumLauncher.png
 install -Dm644 assets/icon/256x256/ql_logo.png %{buildroot}%{_datadir}/icons/hicolor/256x256/apps/io.github.Mrmayman.QuantumLauncher.png
