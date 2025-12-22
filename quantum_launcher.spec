@@ -2,7 +2,7 @@
 %global debug_package %{nil}
 
 Name:           quantum-launcher
-Version:        0.4.2
+Version:        0.4.3
 Release:        1%{?dist}
 Summary:        Simple Minecraft Launcher written in Rust
 
@@ -37,6 +37,7 @@ install -Dm644 assets/freedesktop/quantum-launcher.metainfo.xml %{buildroot}%{_d
 %{_bindir}/quantum-launcher
 %{_datadir}/applications/quantum-launcher.desktop
 %{_datadir}/pixmaps/io.github.Mrmayman.QuantumLauncher.png
+%{_datadir}/icons/hicolor/*/apps/io.github.Mrmayman.QuantumLauncher.png
 %{_datadir}/metainfo/quantum-launcher.metainfo.xml
 
 %changelog
