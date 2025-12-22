@@ -1,5 +1,5 @@
 Name:           quantum-launcher
-Version:        0.4.3
+Version:        0.4.2
 Release:        1%{?dist}
 Summary:        Simple Minecraft Launcher written in Rust
 
@@ -7,7 +7,7 @@ License:        GPLv3
 URL:            https://mrmayman.github.io/quantumlauncher
 Source:         {{{ git_dir_pack }}}
 
-BuildRequires:  rust cargo perl openssl-devel nasm
+BuildRequires:  rust cargo
 
 %global _description %{expand:
 A simple Minecraft Launcher written in Rust.}
