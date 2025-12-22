@@ -191,7 +191,6 @@ jobs:
 
       - name: Determine Release Metadata
         id: meta
-        if: github.event.inputs.create_release == 'true'
         env:
           MANUAL_BODY: ${{ github.event.inputs.release_body }}
         run: |
@@ -224,7 +223,7 @@ jobs:
           done
 
       - name: Create Release and Upload Assets
-        if: github.event.inputs.create_release == 'true'
+        if: steps.meta.outputs.enabled == 'true'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.meta.outputs.tag }}
