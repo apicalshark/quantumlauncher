@@ -1,3 +1,6 @@
+%global _hardened_build 0
+%global debug_package %{nil}
+
 Name:           quantum-launcher
 Version:        0.4.2
 Release:        1%{?dist}
