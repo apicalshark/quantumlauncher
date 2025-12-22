@@ -4,6 +4,10 @@ permissions:
   contents: write
 
 on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+"
+      - "v[0-9]+.[0-9]+.[0-9]+"
   workflow_dispatch:
     inputs:
       tag_name:
@@ -30,6 +34,8 @@ on:
         required: true
         type: boolean
         default: false
+    
+
     
 
 env:
@@ -198,6 +204,11 @@ jobs:
             # echo "body<<EOF" >> $GITHUB_OUTPUT
             # echo "$MANUAL_BODY" >> $GITHUB_OUTPUT
             # echo "EOF" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event_name }}" == "push" ]
+            TAG_NAME=${GITHUB_REF#refs/tags/}
+            echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
+            echo "title=$TAG_NAME" >> $GITHUB_OUTPUT
+            echo "enabled=true" >> $GITHUB_OUTPUT
           fi
 
       - name: Prepare Binaries for Release
