@@ -1,4 +1,4 @@
-%global _hardened_build 0
+%undefine _hardened_build
 %global debug_package %{nil}
 
 Name:           quantum-launcher
