@@ -199,8 +199,6 @@ jobs:
 
       - name: Determine Release Metadata
         id: meta
-        # env:
-        #   MANUAL_BODY: ${{ github.event.inputs.release_body }}
         run: |
           set -xe
           if [ "${{ github.event_name }}" == "workflow_dispatch" ] && [ ${{ github.event.inputs.tag_name }} != "" ]; then
