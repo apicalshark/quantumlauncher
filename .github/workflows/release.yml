@@ -183,7 +183,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v6
-      # - run: ls -alR
 
       - name: Determine Release Metadata
         id: meta
