@@ -154,7 +154,7 @@ jobs:
       - name: Build binary
         shell: bash
         run: |
-          if [ "${{ matrix.build }}" ~= "linux" ]; then
+          if [[ "${{ matrix.build }}" ~= "linux" ]]; then
             export RUSTFLAGS="-C link-args=-Wl,-rpath,\$ORIGIN/lib"
           fi
           PROFILE=${{ steps.determine_profile.outputs.profile }}
@@ -170,9 +170,9 @@ jobs:
           mkdir dist
           PROFILE=${{ steps.determine_profile.outputs.profile }}
 
-          if [ "${{ matrix.build }}" ~= "windows" ]; then
+          if [[ "${{ matrix.build }}" ~= "windows" ]]; then
             cp "target/${{ matrix.target }}/$PROFILE/${{ env.BIN_NAME }}.exe" "dist/"
-          elif [ "${{ matrix.build }}" ~= "macos" ]; then
+          elif [[ "${{ matrix.build }}" ~= "macos" ]]; then
             APP_DIR="build/quantum-launcher.app"
             MACOS_DIR="$APP_DIR/Contents/MacOS"
             RESOURCES_DIR="$APP_DIR/Contents/Resources"
@@ -181,7 +181,7 @@ jobs:
             cp assets/freedesktop/Info.plist "$APP_DIR/Contents/Info.plist"
             sips -s format icns "assets/icon/ql_logo.png" --out "$RESOURCES_DIR/ql_logo.icns"
             hdiutil create -volname "${{ env.BIN_NAME}}" -srcfolder "$APP_DIR" -ov -format UDZO "dist/${{ env.BIN_NAME }}.dmg"
-          elif [ "${{ matrix.build }}" ~= "linux" ]; then
+          elif [[ "${{ matrix.build }}" ~= "linux" ]]; then
             cp -r "target/${{ matrix.target }}/$PROFILE/lib" "dist/"
             cp "target/${{ matrix.target }}/$PROFILE/${{ env.BIN_NAME }}" "dist/"
           fi
