@@ -227,7 +227,7 @@ jobs:
               pkgname="${{ env.PROJECT_NAME }}_${platform_name}"
               if [[ "$platform_name" =~ "linux" ]] || [[ "$platform_name" =~ "appimage" ]]; then
                   chmod +x "$binary_path"
-                  tar -czvf "dist/$pkgname.tar.gz" "$binary_path"
+                  tar -czvf "dist/$pkgname.tar.gz" -C "$(dirname "$binary_path")" .
               else
                   zip -j "dist/$pkgname.zip" "$binary_path"
               fi
