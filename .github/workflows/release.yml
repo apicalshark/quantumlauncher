@@ -225,7 +225,7 @@ jobs:
               binary_path=$(find "$dir" -type f | head -n 1)
               platform_name=$(basename "$dir" | sed 's/quantum-launcher-//')
               pkgname="${{ env.PROJECT_NAME }}_${platform_name}"
-              if [[ "$platform_name" =~ "linux" ]]; then
+              if [[ "$platform_name" =~ "linux" ]] || [[ "$platform_name" =~ "appimage" ]]; then
                   chmod +x "$binary_path"
                   tar -czvf "dist/$pkgname.tar.gz" "$binary_path"
               else
