@@ -104,10 +104,7 @@ impl Launcher {
                 &self.images,
                 self.window_state.size.1,
             ),
-            State::Create(menu) => menu.view(
-                self.client_list.as_deref(),
-                self.version_list_cache.list.as_deref(),
-            ),
+            State::Create(menu) => menu.view(self.client_list.as_deref(), self.tick_timer),
             State::ConfirmAction {
                 msg1,
                 msg2,
@@ -133,7 +130,7 @@ impl Launcher {
                 widget::scrollable(
                     widget::column!(
                         button_with_icon(icons::back(), "Skip", 16).on_press(back_msg.clone()),
-                        changelog(),
+                        changelog(&self.config),
                         button_with_icon(icons::back(), "Continue", 16).on_press(back_msg),
                     )
                     .padding(10)
@@ -207,7 +204,7 @@ impl Launcher {
             widget::mouse_area(
                 widget::row![widget::button(
                     widget::row![icon.style(|t: &LauncherTheme| t.style_text(Color::Mid))]
-                        .align_y(iced::alignment::Vertical::Center)
+                        .align_y(Alignment::Center)
                         .padding([4, 10]),
                 )
                 .padding(0)

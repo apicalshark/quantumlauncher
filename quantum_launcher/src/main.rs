@@ -27,6 +27,7 @@ use std::{borrow::Cow, time::Duration};
 
 use config::LauncherConfig;
 use iced::{Settings, Task};
+use owo_colors::OwoColorize;
 use state::{get_entries, Launcher, Message};
 
 use ql_core::{
@@ -156,7 +157,11 @@ fn main() {
 
     info_no_log!("Starting up the launcher... (OS: {OS_NAME})");
     if let Some(dir) = &launcher_dir {
-        eprintln!("- {}", dir.to_string_lossy());
+        eprintln!(
+            "{} {}",
+            "-".bright_white(),
+            dir.to_string_lossy().bright_black().underline()
+        );
     }
 
     let icon = load_icon();
@@ -186,7 +191,7 @@ fn main() {
             size: iced::Size { width, height },
             min_size: Some(iced::Size {
                 width: 420.0,
-                height: 300.0,
+                height: 310.0,
             }),
             decorations,
             transparent: true,
@@ -308,7 +313,7 @@ fn do_migration() {
         if let Err(e) = std::fs::rename(&legacy_dir, &new_dir) {
             eprintln!("Migration failed: {e}");
         } else if let Err(e) = file_utils::create_symlink(&new_dir, &legacy_dir) {
-            eprintln!("Migration successful but couldn't create symlink to the legacy dir: {e}",);
+            eprintln!("Migration successful but couldn't create symlink to the legacy dir: {e}");
         } else {
             ql_core::info!("Migration successful!\nYour launcher files are now in ~./local/share/QuantumLauncher");
         }

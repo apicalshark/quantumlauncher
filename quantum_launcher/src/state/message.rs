@@ -5,7 +5,7 @@ use crate::{
     state::MenuEditModsModal,
     stylesheet::styles::{LauncherThemeColor, LauncherThemeLightness},
 };
-use iced::widget;
+use iced::widget::{self, scrollable::AbsoluteOffset};
 use ql_core::{
     file_utils::DirItem,
     jarmod::JarMods,
@@ -51,8 +51,9 @@ pub enum CreateInstanceMessage {
     ScreenOpen {
         is_server: bool,
     },
+    SidebarResize(f32),
 
-    VersionsLoaded(Res<(Vec<ListEntry>, String)>, bool),
+    VersionsLoaded(Res<(Vec<ListEntry>, String)>),
     VersionSelected(ListEntry),
     NameInput(String),
     ChangeAssetToggle(bool),
@@ -64,7 +65,6 @@ pub enum CreateInstanceMessage {
 
     Start,
     End(Res<InstanceSelection>),
-    Cancel,
 
     #[allow(unused)]
     Import,
@@ -87,6 +87,7 @@ pub enum EditInstanceMessage {
     JavaArgs(ListMessage),
     JavaArgsModeChanged(bool),
     GameArgs(ListMessage),
+    ToggleSplitArg(bool),
 
     PreLaunchPrefix(ListMessage),
     PreLaunchPrefixModeChanged(PreLaunchPrefixMode),
@@ -107,7 +108,11 @@ pub enum ManageModsMessage {
     ScreenOpen,
     ScreenOpenWithoutUpdate,
 
-    ToggleCheckbox(String, Option<ModId>),
+    ListScrolled(AbsoluteOffset),
+    /// Simple, dumb selection
+    SelectEnsure(String, Option<ModId>),
+    /// More nuanced selection with ctrl/shift multi-select
+    SelectMod(String, Option<ModId>),
 
     DeleteSelected,
     DeleteOptiforge(String),
@@ -273,6 +278,7 @@ pub enum LauncherSettingsMessage {
 
     ToggleAntialiasing(bool),
     ToggleWindowSize(bool),
+    ToggleInstanceRemembering(bool),
     #[allow(unused)]
     ToggleWindowDecorations(bool),
 
@@ -290,13 +296,13 @@ pub enum ListMessage {
 }
 
 impl ListMessage {
-    pub fn apply(self, l: &mut Vec<String>) {
+    pub fn apply(self, l: &mut Vec<String>, split: bool) {
         match self {
             ListMessage::Add => {
                 l.push(String::new());
             }
             ListMessage::Edit(msg, idx) => {
-                if msg.contains(' ') {
+                if split && msg.contains(' ') {
                     l.remove(idx);
                     let mut insert_idx = idx;
                     for s in msg.split(' ').filter(|n| !n.is_empty()) {
@@ -425,8 +431,10 @@ pub enum Message {
     LaunchUploadLog,
     LaunchUploadLogResult(Res<String>),
 
+    #[allow(unused)]
     UpdateCheckResult(Res<UpdateCheckInfo>),
     UpdateDownloadStart,
+    #[allow(unused)]
     UpdateDownloadEnd(Res),
 
     ServerCommandEdit(String),

@@ -1,6 +1,6 @@
 use owo_colors::{OwoColorize, Style};
 use ql_core::{
-    err, info,
+    eeprintln, err, info,
     json::{InstanceConfigJson, VersionDetails},
     InstanceSelection, IntoStringError, ListEntry, Loader, OptifineUniqueVersion, LAUNCHER_DIR,
 };
@@ -19,7 +19,7 @@ use super::PrintCmd;
 pub fn list_available_versions() {
     use std::io::Write;
 
-    eprintln!("Listing downloadable versions...");
+    eeprintln!("Listing downloadable versions...");
     let (versions, _) = match tokio::runtime::Runtime::new()
         .unwrap()
         .block_on(ql_instances::list_versions())
@@ -318,6 +318,7 @@ pub async fn loader(cmd: QLoader, servers: bool) -> Result<(), Box<dyn std::erro
                 .copied()
                 .find(|n| n.to_modrinth_str().eq_ignore_ascii_case(&loader))
             else {
+                err!("Invalid loader: {loader}");
                 exit(1)
             };
 

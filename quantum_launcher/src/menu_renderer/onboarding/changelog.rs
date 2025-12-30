@@ -1,16 +1,27 @@
 use iced::widget;
 
 use crate::{
-    menu_renderer::{onboarding::IMG_MANAGE_MODS, Element},
+    config::LauncherConfig,
+    menu_renderer::{
+        get_mode_selector, onboarding::IMG_MANAGE_MODS, settings::get_theme_selector, Element,
+    },
     state::Message,
 };
 
 #[allow(unused)]
-pub fn changelog<'a>() -> Element<'a> {
+pub fn changelog<'a>(config: &LauncherConfig) -> Element<'a> {
     const FS: u16 = 14;
+    let cmd = if cfg!(target_os = "macos") {
+        "Cmd"
+    } else {
+        "Ctrl"
+    };
 
     widget::column![
-        widget::text("Welcome to QuantumLauncher v0.4.3!").size(40),
+        widget::text("Welcome to QuantumLauncher v0.5.0!").size(40),
+        "Happy new year by the way!",
+
+        get_mode_selector(config),
 
         widget::container(widget::column![
             "TLDR;",
@@ -23,8 +34,9 @@ pub fn changelog<'a>() -> Element<'a> {
 
         widget::text("Mod Loaders").size(32),
         widget::column![
-            widget::text("- You can now install OptiFine and Forge together!"),
-            widget::text("Added alternate fabric implementations for versions without official Fabric support:"),
+            "- You can now install OptiFine and Forge together!",
+            "- Added CLI commands to manage loaders: `quantum_launcher loader install/info/uninstall`",
+            "Added alternate fabric implementations for versions without official Fabric support:",
             widget::text("- Legacy Fabric (1.3-1.13)").size(14),
             widget::text("- OrnitheMC (b1.7-1.13)").size(14),
             widget::text("- Babric and Cursed Legacy (b1.7.3)").size(14),
@@ -37,6 +49,7 @@ pub fn changelog<'a>() -> Element<'a> {
         "- Export mods as a shareable text list with optional links!",
         "- Write instance-specific notes for coordinates, todo lists, etc!",
         "- Many small UX improvements and polish",
+        "- The launcher will now remember the last-selected instance (toggleable)",
         ].spacing(5),
 
         widget::text("Themes").size(32),
@@ -46,6 +59,8 @@ pub fn changelog<'a>() -> Element<'a> {
             widget::text("    - \"Adwaita\" greyish theme (GNOME-inspired)").size(14),
             widget::text("    - \"Halloween\" orange/amber theme (thanks @Sreehari425)").size(14),
         ].spacing(5),
+
+        get_theme_selector(),
 
         widget::text("Create Instance").size(32),
         widget::column![
@@ -72,9 +87,14 @@ pub fn changelog<'a>() -> Element<'a> {
         widget::text("Keyboard Navigation").size(32),
 
         widget::column![
-            "- \"Ctrl/Cmd/Alt +  1/2/3\" to switch tabs in main screen",
-            "- \"Ctrl/Cmd + N\" to create new instance",
-            "- \"Ctrl/Cmd + ,\" to open settings",
+            widget::text!("- {cmd}/Alt + 1/2/3 to switch tabs in main screen").size(14),
+            widget::text!("- {cmd} + , to open settings").size(14),
+
+            widget::Space::with_height(5),
+            "Creating instance:",
+            widget::text!("- {cmd} + N to open screen").size(14),
+            widget::text!("- {cmd} + F to search versions (and `Enter` to select)").size(14),
+            widget::text!("- {cmd} + Enter to confirm").size(14),
         ].spacing(5),
 
         widget::horizontal_rule(1),
@@ -119,6 +139,7 @@ pub fn changelog<'a>() -> Element<'a> {
             widget::text("- File location on linux has moved from `~/.config` to `~/.local/share` (with auto-migration)").size(14),
             widget::text("- Added option to redownload libraries and assets").size(14),
             widget::text("- Added warning for mistakenly downloading Windows 32-bit build").size(14),
+            widget::text("- Added option to input arguments with spaces").size(14),
         ].spacing(5),
 
         widget::horizontal_rule(1),
@@ -142,6 +163,7 @@ pub fn changelog<'a>() -> Element<'a> {
             widget::text("- Improved ARM support for Linux and macOS, for 1.21 and above").size(14),
             widget::text("- Fixed \"java binary not found\" macOS error").size(14),
             widget::text("- Fixed \"SSLHandshakeException\" crash on Windows").size(14),
+            widget::text("- Fixed some versions (eg: 1.12.2) being undownloadable on macOS").size(14)
         ].spacing(5),
 
         widget::Space::with_height(10),

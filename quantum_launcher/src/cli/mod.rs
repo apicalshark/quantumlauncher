@@ -42,9 +42,9 @@ struct Cli {
 enum QSubCommand {
     #[command(about = "Creates a new Minecraft instance")]
     Create {
-        instance_name: String,
         #[arg(help = "Version of Minecraft to download")]
         version: String,
+        instance_name: String,
         #[arg(short, long)]
         #[arg(help = "Skips downloading game assets (sound/music) to speed up downloads")]
         skip_assets: bool,
@@ -84,14 +84,14 @@ Supported loaders: Fabric, Forge, Quilt, NeoForge, Paper, OptiFine
 (case-insensitive)"
 )]
 enum QLoader {
-    #[command(long_about = r"
-Installs the specified loader
+    #[command(about = "Installs the specified loader")]
+    #[command(long_about = r"Installs the specified loader
 
 Supported loaders: Fabric, Forge, Quilt, NeoForge, Paper, OptiFine
 (case-insensitive)")]
     Install {
-        instance: String,
         loader: String,
+        instance: String,
         more: Option<String>,
         #[arg(long)]
         version: Option<String>,

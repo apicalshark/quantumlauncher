@@ -7,7 +7,7 @@ use super::{
     back_button, button_with_icon, get_mode_selector, sidebar_button, underline, Element, DISCORD,
     GITHUB,
 };
-use crate::menu_renderer::edit_instance::{get_args_list, resolution_dialog};
+use crate::menu_renderer::edit_instance::{args_split_by_space, get_args_list, resolution_dialog};
 use crate::menu_renderer::{back_to_launch_screen, checkered_list, sidebar, tsubtitle};
 use crate::{
     config::LauncherConfig,
@@ -26,6 +26,8 @@ pub static IMG_ICED: LazyLock<widget::image::Handle> = LazyLock::new(|| {
 
 const SETTINGS_SPACING: f32 = 10.0;
 const SETTING_WIDTH: u16 = 180;
+
+pub const PREFIX_EXPLANATION: &str = "Commands to add before the game launch command\nEg: 'prime-run' to force NVIDIA GPU on Linux with Optimus";
 
 impl MenuLauncherSettings {
     pub fn view<'a>(&'a self, config: &'a LauncherConfig) -> Element<'a> {
@@ -135,6 +137,9 @@ impl MenuLauncherSettings {
 
                 widget::checkbox("Remember window size", config.window.as_ref().is_none_or(|n| n.save_window_size))
                     .on_toggle(|n| Message::LauncherSettings(LauncherSettingsMessage::ToggleWindowSize(n))),
+                widget::Space::with_height(5),
+                widget::checkbox("Remember last selected instance", config.persistent.clone().unwrap_or_default().selected_remembered)
+                    .on_toggle(|n| Message::LauncherSettings(LauncherSettingsMessage::ToggleInstanceRemembering(n))),
             ]
             .spacing(5)
             .into(),
@@ -161,6 +166,8 @@ Only increase if progress bars stutter or "not responding" dialogs show"#).size(
 
 fn get_ui_opacity(config: &LauncherConfig) -> widget::Column<'static, Message, LauncherTheme> {
     let ui_opacity = config.c_ui_opacity();
+    let t = |t| widget::text(t).size(12).style(tsubtitle);
+
     widget::column![
         widget::row![
             widget::text!("Window Opacity ({ui_opacity:.2}x)")
@@ -173,9 +180,8 @@ fn get_ui_opacity(config: &LauncherConfig) -> widget::Column<'static, Message, L
         ]
         .spacing(5)
         .align_y(Alignment::Center),
-        widget::text("Window background transparency\n0.5 (translucent) ..  1.0 (opaque)")
-            .size(12)
-            .style(tsubtitle),
+        t("Window background transparency\n(May not work on all systems/GPUs)"),
+        t("0.5 (translucent) ..  1.0 (opaque)"),
     ]
     .spacing(5)
 }
@@ -223,19 +229,12 @@ impl LauncherSettingsTab {
                 ),
                 widget::horizontal_rule(1),
                 "Global Java Arguments:",
-                get_args_list(
-                    config.extra_java_args.as_deref(),
-                    |msg| {
-                        Message::LauncherSettings(LauncherSettingsMessage::GlobalJavaArgs(msg))
-                    },
-                ),
+                get_args_list(config.extra_java_args.as_deref(), |msg| {
+                    Message::LauncherSettings(LauncherSettingsMessage::GlobalJavaArgs(msg))
+                }),
                 widget::Space::with_height(5),
                 "Global Pre-Launch Prefix:",
-                widget::text(
-                    "Commands to prepend to the game launch command.\nExample: Use 'prime-run' to force NVIDIA GPU usage on Linux with Optimus graphics."
-                )
-                .size(12)
-                .style(tsubtitle),
+                widget::text(PREFIX_EXPLANATION).size(12).style(tsubtitle),
                 get_args_list(
                     config
                         .global_settings
@@ -245,6 +244,7 @@ impl LauncherSettingsTab {
                         n
                     )),
                 ),
+                args_split_by_space(menu.arg_split_by_space),
                 widget::horizontal_rule(1),
                 widget::row![
                     button_with_icon(icons::bin(), "Clear Java installs", 16).on_press(

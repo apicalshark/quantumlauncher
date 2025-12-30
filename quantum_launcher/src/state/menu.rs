@@ -136,12 +136,17 @@ impl MenuLaunch {
 /// The screen where you can edit an instance/server.
 pub struct MenuEditInstance {
     pub config: InstanceConfigJson,
+
+    // Renaming Instance:
     pub is_editing_name: bool,
     pub instance_name: String,
     pub old_instance_name: String,
+    // Changing RAM:
     pub slider_value: f32,
     pub slider_text: String,
+
     pub main_class_mode: Option<MainClassMode>,
+    pub arg_split_by_space: bool,
 }
 
 pub enum SelectedState {
@@ -219,6 +224,7 @@ pub struct MenuEditMods {
     pub update_check_handle: Option<iced::task::Handle>,
     pub available_updates: Vec<(ModId, String, bool)>,
 
+    pub list_scroll: AbsoluteOffset,
     /// Index of the item selected before pressing shift
     pub list_shift_index: Option<usize>,
     pub drag_and_drop_hovered: bool,
@@ -317,21 +323,26 @@ pub struct MenuEditJarMods {
 }
 
 pub enum MenuCreateInstance {
-    LoadingList {
-        _handle: iced::task::Handle,
-    },
-    Choosing {
-        is_server: bool,
-        search_box: String,
-        show_category_dropdown: bool,
-        selected_categories: HashSet<ql_core::ListEntryKind>,
-        // Instance info:
-        selected_version: ListEntry,
-        instance_name: String,
-        download_assets: bool,
-    },
+    Choosing(MenuCreateInstanceChoosing),
     DownloadingInstance(ProgressBar<DownloadProgress>),
     ImportingInstance(ProgressBar<GenericProgress>),
+}
+
+pub struct MenuCreateInstanceChoosing {
+    pub _loading_list_handle: iced::task::Handle,
+    pub list: Option<Vec<ListEntry>>,
+    // UI:
+    pub is_server: bool,
+    pub search_box: String,
+    pub show_category_dropdown: bool,
+    pub selected_categories: HashSet<ql_core::ListEntryKind>,
+    // Sidebar resizing:
+    pub sidebar_grid_state: widget::pane_grid::State<bool>,
+    pub sidebar_split: Option<widget::pane_grid::Split>,
+    // Instance info:
+    pub selected_version: ListEntry,
+    pub instance_name: String,
+    pub download_assets: bool,
 }
 
 pub enum MenuInstallFabric {
@@ -375,6 +386,7 @@ pub struct MenuInstallForge {
     pub is_java_getting_installed: bool,
 }
 
+#[allow(unused)]
 pub struct MenuLauncherUpdate {
     pub url: String,
     pub progress: Option<ProgressBar<GenericProgress>>,
@@ -434,6 +446,7 @@ impl MenuModsDownload {
 pub struct MenuLauncherSettings {
     pub temp_scale: f64,
     pub selected_tab: LauncherSettingsTab,
+    pub arg_split_by_space: bool,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
