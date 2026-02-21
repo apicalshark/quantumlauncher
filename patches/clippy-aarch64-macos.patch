@@ -1,0 +1,26 @@
+diff --git a/quantum_launcher/src/tick.rs b/quantum_launcher/src/tick.rs
+index ef046f1..0b9c2e4 100644
+--- a/quantum_launcher/src/tick.rs
++++ b/quantum_launcher/src/tick.rs
+@@ -170,7 +170,7 @@ impl Launcher {
+     }
+ 
+     pub fn autosave_config(&mut self) -> Task<Message> {
+-        if self.tick_timer % 5 == 0 && self.autosave.insert(AutoSaveKind::LauncherConfig) {
++        if self.tick_timer.is_multiple_of(5) && self.autosave.insert(AutoSaveKind::LauncherConfig) {
+             let launcher_config = self.config.clone();
+             Task::perform(
+                 async move { launcher_config.save().await.strerr() },
+diff --git a/quantum_launcher/src/update.rs b/quantum_launcher/src/update.rs
+index 33f04a1..86800a6 100644
+--- a/quantum_launcher/src/update.rs
++++ b/quantum_launcher/src/update.rs
+@@ -461,7 +461,7 @@ impl Launcher {
+             .config
+             .ui_mode
+             .is_none_or(|n| n == LauncherThemeLightness::Auto);
+-        let interval = self.tick_timer % INTERVAL == 0;
++        let interval = self.tick_timer.is_multiple_of(INTERVAL);
+ 
+         if is_auto_theme && interval {
+             Task::perform(tokio::task::spawn_blocking(dark_light::detect), |n| {
