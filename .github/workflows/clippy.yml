@@ -34,7 +34,7 @@ on:
           - fix
           - make a PR
           - make a patch
-        default: 'none'
+        default: 'make a patch'
 
 env:
   BIN_NAME: quantum_launcher
