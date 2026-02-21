@@ -242,5 +242,6 @@ jobs:
             Automated PR to apply `cargo clippy` fixes combined across all build targets.
 
             This aggregates the formatting and style rules unique to specific `#[cfg(os)]` blocks and architecture rules.
-          branch: "clippy-fixes"
+          branch: "clippy"
+          branch-suffix: short-commit-hash
           delete-branch: true
