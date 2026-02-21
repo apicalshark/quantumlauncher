@@ -34,7 +34,7 @@ on:
           - fix
           - make a PR
           - make a patch
-        default: 'make a patch'
+        default: "make a patch"
 
 env:
   BIN_NAME: quantum_launcher
@@ -48,8 +48,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        build:
-          [
+        build: [
             x86_64-linux,
             # aarch64-linux,
             # armv7-linux,
