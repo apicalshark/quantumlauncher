@@ -207,11 +207,12 @@ jobs:
           done
 
           if git diff --quiet; then
-            echo "has_changes=false" >> $GITHUB_ENV
-            echo "No changes found across all targets."
-          else
             echo "has_changes=true" >> $GITHUB_ENV
             echo "All changes aggregated."
+          else
+            echo "has_changes=false" >> $GITHUB_ENV
+            echo "No changes found across all targets."
+
           fi
 
           git diff > combined-clippy.patch
