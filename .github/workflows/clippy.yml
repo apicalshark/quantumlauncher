@@ -14,7 +14,7 @@ on:
         description: "Fail on warnings"
         required: true
         type: boolean
-        default: true
+        default: false
       all_features:
         description: "--all-features"
         required: true
@@ -34,7 +34,7 @@ on:
           - fix
           - make a PR
           - make a patch
-        default: "make a patch"
+        default: "none"
 
 env:
   BIN_NAME: quantum_launcher
