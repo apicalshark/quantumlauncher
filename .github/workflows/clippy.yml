@@ -204,7 +204,7 @@ jobs:
           shopt -s nullglob
           for patch in patches/*.patch; do
             echo "Applying $patch."
-            git apply --3way "$patch" || git apply "$patch""
+            git apply --3way "$patch" || git apply "$patch"
           done
 
           if git diff --quiet; then
