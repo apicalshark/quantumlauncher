@@ -25,6 +25,8 @@ on:
         required: true
         type: boolean
         default: true
+      # To make Pull Request work, read this first:
+      # https://github.com/peter-evans/create-pull-request#workflow-permissions
       fix:
         description: "--fix"
         required: true
@@ -33,7 +35,7 @@ on:
           - none
           - fix
           - make a PR
-          - make a patch
+          - make a patch 
         default: "none"
 
 env:
