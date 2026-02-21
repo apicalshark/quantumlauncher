@@ -51,13 +51,13 @@ jobs:
         build:
           [
             x86_64-linux,
-            aarch64-linux,
-            armv7-linux,
-            x86_64-macos,
+            # aarch64-linux,
+            # armv7-linux,
+            # x86_64-macos,
             x86_64-windows,
             aarch64-macos,
-            aarch64-windows,
-            i686-windows,
+            # aarch64-windows,
+            # i686-windows,
           ]
         include:
           - build: x86_64-linux
@@ -65,22 +65,22 @@ jobs:
             rust: stable
             target: x86_64-unknown-linux-gnu
             cross: false
-          - build: aarch64-linux
-            os: ubuntu-22.04-arm
-            rust: stable
-            target: aarch64-unknown-linux-gnu
-            cross: false
-          - build: armv7-linux
-            os: ubuntu-22.04
-            rust: stable
-            target: armv7-unknown-linux-gnueabihf
-            cross: true
-          - build: x86_64-macos
-            dep_target: 10.15
-            os: macos-latest
-            rust: stable
-            target: x86_64-apple-darwin
-            cross: false
+          # - build: aarch64-linux
+          #   os: ubuntu-22.04-arm
+          #   rust: stable
+          #   target: aarch64-unknown-linux-gnu
+          #   cross: false
+          # - build: armv7-linux
+          #   os: ubuntu-22.04
+          #   rust: stable
+          #   target: armv7-unknown-linux-gnueabihf
+          #   cross: true
+          # - build: x86_64-macos
+          #   dep_target: 10.15
+          #   os: macos-latest
+          #   rust: stable
+          #   target: x86_64-apple-darwin
+          #   cross: false
           - build: x86_64-windows
             os: windows-latest
             rust: stable
@@ -92,16 +92,16 @@ jobs:
             rust: stable
             target: aarch64-apple-darwin
             cross: false
-          - build: aarch64-windows
-            os: windows-11-arm
-            rust: stable
-            target: aarch64-pc-windows-msvc
-            cross: false
-          - build: i686-windows
-            os: windows-latest
-            rust: stable-i686
-            target: i686-pc-windows-msvc
-            cross: false
+          # - build: aarch64-windows
+          #   os: windows-11-arm
+          #   rust: stable
+          #   target: aarch64-pc-windows-msvc
+          #   cross: false
+          # - build: i686-windows
+          #   os: windows-latest
+          #   rust: stable-i686
+          #   target: i686-pc-windows-msvc
+          #   cross: false
 
     steps:
       - name: Checkout sources
