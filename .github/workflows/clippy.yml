@@ -157,6 +157,7 @@ jobs:
             export MACOSX_DEPLOYMENT_TARGET=${{ matrix.dep_target }}
           fi
 
+          set -ex
           if [ "${{ matrix.cross }}" = "true" ]; then
             cross clippy --target ${{ matrix.target }} $ARGS
           else
