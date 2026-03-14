@@ -1,19 +1,18 @@
 use iced::Task;
 use ql_core::{
-    err,
+    IntoIoError, IntoStringError, LAUNCHER_DIR, err,
     json::{
-        instance_config::{CustomJarConfig, MainClassMode},
         GlobalSettings, InstanceConfigJson,
+        instance_config::{CustomJarConfig, MainClassMode},
     },
-    IntoIoError, IntoStringError, LAUNCHER_DIR,
 };
 
 use crate::{
     message_handler::format_memory,
     state::{
-        dir_watch, get_entries, CustomJarState, EditInstanceMessage, LaunchTab, Launcher,
-        MenuCreateInstance, MenuEditInstance, MenuLaunch, Message, ProgressBar, State,
-        ADD_JAR_NAME, NONE_JAR_NAME, OPEN_FOLDER_JAR_NAME, REMOVE_JAR_NAME,
+        ADD_JAR_NAME, CustomJarState, EditInstanceMessage, LaunchTab, Launcher, MainMenuMessage,
+        MenuCreateInstance, MenuEditInstance, MenuLaunch, Message, NONE_JAR_NAME,
+        OPEN_FOLDER_JAR_NAME, ProgressBar, REMOVE_JAR_NAME, State, dir_watch, get_entries,
     },
 };
 
@@ -83,7 +82,7 @@ impl Launcher {
             EditInstanceMessage::JavaOverrideVersion(n) => {
                 iflet_config!(&mut self.state, config <- {
                     config.java_override_version = Some(n);
-                })
+                });
             }
             EditInstanceMessage::BrowseJavaOverride => {
                 if let Some(file) = rfd::FileDialog::new()
@@ -113,7 +112,6 @@ impl Launcher {
                     ..
                 }) = &mut self.state
                 {
-                    menu.memory_input = input.clone();
                     if let Ok(mb) = input.parse::<usize>() {
                         if mb > 0 {
                             menu.config.ram_in_mb = mb;
@@ -121,6 +119,7 @@ impl Launcher {
                             menu.slider_text = format_memory(mb);
                         }
                     }
+                    menu.memory_input = input;
                 }
             }
             EditInstanceMessage::LoggingToggle(t) => iflet_config!(&mut self.state, config <- {
@@ -169,12 +168,11 @@ impl Launcher {
                     ..
                 }) = &mut self.state
                 {
-                    menu.instance_name = self
-                        .selected_instance
+                    self.selected_instance
                         .as_ref()
                         .unwrap()
                         .get_name()
-                        .to_owned();
+                        .clone_into(&mut menu.instance_name);
                     menu.is_editing_name = !menu.is_editing_name;
                 }
             }
@@ -229,7 +227,7 @@ impl Launcher {
                         menu.config
                             .custom_jar
                             .get_or_insert_with(CustomJarConfig::default)
-                            .name = path
+                            .name = path;
                     }
                 }
             }
@@ -260,7 +258,7 @@ impl Launcher {
                     if let Some(c) = &mut config.custom_jar {
                         c.autoset_main_class = autos;
                     }
-                };
+                }
             }
             EditInstanceMessage::ReinstallLibraries => {
                 return Ok(self.instance_redownload_stage(
@@ -293,32 +291,13 @@ impl Launcher {
                 if let Err(err) = t {
                     Message::Error(err)
                 } else {
-                    Message::MChangeTab(LaunchTab::Edit)
+                    MainMenuMessage::ChangeTab(LaunchTab::Edit).into()
                 }
             },
         )
     }
 
-    fn loaded_custom_jar(&mut self, items: Vec<String>) -> Task<Message> {
-        match &mut self.custom_jar {
-            Some(cx) => {
-                cx.choices = items.clone();
-            }
-            None => {
-                let (recv, watcher) = match dir_watch(LAUNCHER_DIR.join("custom_jars")) {
-                    Ok(n) => n,
-                    Err(err) => {
-                        err!("Couldn't load list of custom jars (2)! {err}");
-                        return Task::none();
-                    }
-                };
-                self.custom_jar = Some(CustomJarState {
-                    choices: items.clone(),
-                    recv,
-                    _watcher: watcher,
-                });
-            }
-        }
+    fn loaded_custom_jar(&mut self, choices: Vec<String>) -> Task<Message> {
         // If the currently selected jar got deleted/renamed
         // then unselect it
         if let State::Launch(MenuLaunch {
@@ -327,11 +306,29 @@ impl Launcher {
         }) = &mut self.state
         {
             if let Some(jar) = &menu.config.custom_jar {
-                if !items.contains(&jar.name) {
+                if !choices.contains(&jar.name) {
                     menu.config.custom_jar = None;
                 }
             }
         }
+
+        if let Some(cx) = &mut self.custom_jar {
+            cx.choices = choices;
+        } else {
+            let (recv, watcher) = match dir_watch(LAUNCHER_DIR.join("custom_jars")) {
+                Ok(n) => n,
+                Err(err) => {
+                    err!("Couldn't load list of custom jars (2)! {err}");
+                    return Task::none();
+                }
+            };
+            self.custom_jar = Some(CustomJarState {
+                choices,
+                recv,
+                _watcher: watcher,
+            });
+        }
+
         Task::none()
     }
 
@@ -360,10 +357,8 @@ impl Launcher {
             *menu
                 .config
                 .custom_jar
-                .get_or_insert_with(CustomJarConfig::default) = CustomJarConfig {
-                name: file_name.clone(),
-                autoset_main_class: false,
-            };
+                .get_or_insert_with(CustomJarConfig::default) =
+                CustomJarConfig::new(file_name.clone());
 
             Task::perform(
                 tokio::fs::copy(path, LAUNCHER_DIR.join("custom_jars").join(file_name)),
