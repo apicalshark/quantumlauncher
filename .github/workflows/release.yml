@@ -133,15 +133,7 @@ jobs:
           sudo apt-get install -y libdbus-1-dev pkg-config libdbus-1-3
 
       # Unblock when nasm is a requirement
-      - uses: ilammy/setup-nasm@v1
-        if: matrix.target == 'i686-pc-windows-msvc'
-        with:
-          platform: win32
-
-      - uses: ilammy/msvc-dev-cmd@v1
-        if: matrix.target == 'i686-pc-windows-msvc'
-        with:
-          arch: amd64_x86
+      # - uses: ilammy/setup-nasm@v1
 
       - name: Install rustup for ${{ matrix.os }}
         if: matrix.os == 'windows-11-arm'
@@ -167,7 +159,10 @@ jobs:
           if [[ "${{ matrix.build }}" =~ "macos" ]]; then
             export MACOSX_DEPLOYMENT_TARGET=${{ matrix.dep_target }}
           fi
-
+          if [[ "${{ matrix.target }}" =~ "i686-pc-windows-msvc" ]]; then
+            export AWS_LC_SYS_NO_ASM=1
+            export PROFILE="release-dbg"
+          fi
           PROFILE=${{ steps.determine_profile.outputs.profile }}
           if [ "${{ matrix.cross }}" = "true" ]; then
             cross build --profile $PROFILE --target ${{ matrix.target }}
