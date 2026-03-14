@@ -104,7 +104,7 @@ jobs:
             final_name: windows_aarch64
           - build: i686-windows
             os: windows-latest
-            rust: stable-i686
+            rust: stable
             target: i686-pc-windows-msvc
             cross: false
             final_name: windows_i686
@@ -161,11 +161,6 @@ jobs:
           fi
 
           PROFILE=${{ steps.determine_profile.outputs.profile }}
-          if [[ "${{ matrix.target }}" =~ "i686-pc-windows-msvc" ]]; then
-            export AWS_LC_SYS_NO_ASM=1
-            export AWS_LC_FIPS_SYS_NO_ASM=1
-            export PROFILE="release-dbg"
-          fi
           if [ "${{ matrix.cross }}" = "true" ]; then
             cross build --profile $PROFILE --target ${{ matrix.target }}
           else
