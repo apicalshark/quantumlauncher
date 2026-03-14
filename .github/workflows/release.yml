@@ -138,6 +138,11 @@ jobs:
         with:
           platform: win32
 
+      - uses: ilammy/msvc-dev-cmd@v1
+        if: matrix.target == 'i686-pc-windows-msvc'
+        with:
+          arch: amd64_x86
+
       - name: Install rustup for ${{ matrix.os }}
         if: matrix.os == 'windows-11-arm'
         shell: bash
