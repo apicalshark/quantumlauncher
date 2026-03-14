@@ -159,11 +159,13 @@ jobs:
           if [[ "${{ matrix.build }}" =~ "macos" ]]; then
             export MACOSX_DEPLOYMENT_TARGET=${{ matrix.dep_target }}
           fi
+
+          PROFILE=${{ steps.determine_profile.outputs.profile }}
           if [[ "${{ matrix.target }}" =~ "i686-pc-windows-msvc" ]]; then
             export AWS_LC_SYS_NO_ASM=1
+            export AWS_LC_FIPS_SYS_NO_ASM=1
             export PROFILE="release-dbg"
           fi
-          PROFILE=${{ steps.determine_profile.outputs.profile }}
           if [ "${{ matrix.cross }}" = "true" ]; then
             cross build --profile $PROFILE --target ${{ matrix.target }}
           else
