@@ -227,6 +227,9 @@ fn main() {
             }),
             decorations,
             transparent: true,
+            platform_specific: PlatformSpecific {
+                application_id: String::from("io.github.Mrmayman.QuantumLauncher"),
+            },
             ..Default::default()
         })
         .run_with(move || Launcher::new(is_new_user, config))
