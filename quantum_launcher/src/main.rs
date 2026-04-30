@@ -229,6 +229,7 @@ fn main() {
             transparent: true,
             platform_specific: iced::window::settings::PlatformSpecific {
                 application_id: String::from("io.github.Mrmayman.QuantumLauncher"),
+                ..Default::default()
             },
             ..Default::default()
         })
