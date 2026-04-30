@@ -35,10 +35,10 @@ install -Dm644 assets/freedesktop/quantum-launcher.metainfo.xml %{buildroot}%{_d
 %license LICENSE
 %doc README.md
 %{_bindir}/quantum-launcher
-%{_datadir}/applications/quantum-launcher.desktop
+%{_datadir}/applications/io.github.Mrmayman.QuantumLauncher.desktop
 %{_datadir}/pixmaps/io.github.Mrmayman.QuantumLauncher.png
 %{_datadir}/icons/hicolor/256x256/apps/io.github.Mrmayman.QuantumLauncher.png
-%{_datadir}/metainfo/quantum-launcher.metainfo.xml
+%{_datadir}/metainfo/io.github.Mrmayman.QuantumLauncher.xml
 
 %changelog
 %autochangelog
