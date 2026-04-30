@@ -29,7 +29,7 @@ install -Dm755 target/release/quantum_launcher %{buildroot}%{_bindir}/quantum-la
 install -Dm644 assets/freedesktop/quantum-launcher.desktop %{buildroot}%{_datadir}/applications/io.github.Mrmayman.QuantumLauncher.desktop
 install -Dm644 assets/icon/256x256/ql_logo.png %{buildroot}%{_datadir}/pixmaps/io.github.Mrmayman.QuantumLauncher.png
 install -Dm644 assets/icon/256x256/ql_logo.png %{buildroot}%{_datadir}/icons/hicolor/256x256/apps/io.github.Mrmayman.QuantumLauncher.png
-install -Dm644 assets/freedesktop/quantum-launcher.metainfo.xml %{buildroot}%{_datadir}/metainfo/quantum-launcher.metainfo.xml
+install -Dm644 assets/freedesktop/quantum-launcher.metainfo.xml %{buildroot}%{_datadir}/metainfo/io.github.Mrmayman.QuantumLauncher.metainfo.xml
 
 %files
 %license LICENSE
