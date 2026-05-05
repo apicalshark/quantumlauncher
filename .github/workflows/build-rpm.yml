@@ -31,7 +31,7 @@ jobs:
 
       - name: Clone Repo
         run: |
-          git clone https://github.com/Mrmayman/quantumlauncher.git
+          git clone https://github.com/apicalshark/quantumlauncher.git
 
       - name: Build release package
         run: |
