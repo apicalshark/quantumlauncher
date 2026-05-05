@@ -229,7 +229,7 @@ fn main() {
             decorations,
             transparent: true,
             platform_specific: iced::window::settings::PlatformSpecific {
-                application_id: Some("io.github.Mrmayman.QuantumLauncher".to_owned()),
+                application_id: Some("io.github.Mrmayman.QuantumLauncher".to_string()),
                 ..Default::default()
             },
             ..Default::default()
