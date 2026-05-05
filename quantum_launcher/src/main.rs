@@ -208,6 +208,7 @@ fn main() {
         .scale_factor(Launcher::scale_factor)
         .theme(Launcher::theme)
         .settings(Settings {
+            id: Some("io.github.Mrmayman.QuantumLauncher".to_string()),
             fonts: load_fonts(),
             default_font: FONT_DEFAULT,
             antialiasing: config
@@ -227,10 +228,6 @@ fn main() {
             }),
             decorations,
             transparent: true,
-            platform_specific: iced::window::settings::PlatformSpecific {
-                application_id: String::from("io.github.Mrmayman.QuantumLauncher"),
-                ..Default::default()
-            },
             ..Default::default()
         })
         .run_with(move || Launcher::new(is_new_user, config))
