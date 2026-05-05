@@ -208,7 +208,7 @@ fn main() {
         .scale_factor(Launcher::scale_factor)
         .theme(Launcher::theme)
         .settings(Settings {
-            id: Some("io.github.Mrmayman.QuantumLauncher".to_string()),
+            id: Some("io.github.Mrmayman.QuantumLauncher".into()),
             fonts: load_fonts(),
             default_font: FONT_DEFAULT,
             antialiasing: config
