@@ -228,6 +228,10 @@ fn main() {
             }),
             decorations,
             transparent: true,
+            platform_specific: iced::window::settings::PlatformSpecific {
+                application_id: Some("io.github.Mrmayman.QuantumLauncher".into()),
+                ..Default::default()
+            },
             ..Default::default()
         })
         .run_with(move || Launcher::new(is_new_user, config))
