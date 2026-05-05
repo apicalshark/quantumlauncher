@@ -229,6 +229,7 @@ fn main() {
             decorations,
             transparent: true,
             platform_specific: iced::window::settings::PlatformSpecific {
+                #[cfg(target_os = "linux")]
                 application_id: "io.github.Mrmayman.QuantumLauncher".to_owned(),
                 ..Default::default()
             },
